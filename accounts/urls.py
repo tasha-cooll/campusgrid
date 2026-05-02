@@ -1,9 +1,11 @@
 from django.urls import path
-
-urlpatterns = [
-    # Routes will be added as each module is built
-]
+from .views import RegisterView, MeView, UserListView, ChangeRoleView
 
 app_name = 'accounts'
 
-urlpatterns = []
+urlpatterns = [
+    path('register/',           RegisterView.as_view(),   name='register'),
+    path('me/',                 MeView.as_view(),          name='me'),
+    path('users/',              UserListView.as_view(),    name='user-list'),
+    path('users/<int:pk>/role/', ChangeRoleView.as_view(), name='change-role'),
+]
