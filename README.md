@@ -298,9 +298,9 @@ Phase 1 — Foundation
 └── 🔄 Base templates and static files
 
 Phase 2 — Authentication & Facility Management
-├── 🔲 Custom user model with roles
-├── 🔲 JWT login / logout / token refresh
-├── 🔲 Role-based permission middleware
+├── ✅ Custom user model with roles
+├── ✅ JWT login / logout / token refresh
+├── ✅ Role-based permission middleware
 ├── 🔲 Facility CRUD (Admin)
 └── 🔲 Facility listing view (all roles)
 
@@ -339,6 +339,7 @@ Phase 6 — Polish & Deployment
 |---|---|---|---|
 | 2026-03-26 | Phase 1 | Repository created and README written | Initial commit |
 | 2026-05-02 | Phase 1 | Django scaffold, settings, DB config, CustomUser model | v0.1.0 |
+| 2026-05-02 | Phase 2 | User authentication — JWT, roles, permissions, registration | v0.2.0 |
 | — | — | — | — |
 
 *This table is updated with every significant commit.*
