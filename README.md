@@ -1,5 +1,7 @@
 # campusgrid
+
 Centralized facility booking and conflict resolution platform for university extarcurricular spaces - UEAB Senior Project INSY 492
+
 <div align="center">
 
 <img src="https://img.shields.io/badge/version-0.1.0--alpha-1F3864?style=for-the-badge" alt="Version"/>
@@ -14,7 +16,7 @@ Centralized facility booking and conflict resolution platform for university ext
 
 ### Extracurricular Facility Utilization Conflict Resolver
 
-*A centralized, intelligent scheduling platform for university extracurricular spaces.*
+_A centralized, intelligent scheduling platform for university extracurricular spaces._
 
 **INSY 492 — Senior Project · University of Eastern Africa Baraton**
 **Student:** Win Wanjiru Gatacha · **ID:** SGATWI2311
@@ -48,7 +50,7 @@ Centralized facility booking and conflict resolution platform for university ext
 
 The system's defining feature is its **conflict detection engine**: when a requested time slot is already occupied, CampusGrid does not simply reject the booking — it automatically surfaces the **three nearest available alternative slots**, resolving potential disputes before they occur.
 
-> *"Before CampusGrid, clubs found out about double-bookings on the day of the event. After CampusGrid, the conflict never reaches a human."*
+> _"Before CampusGrid, clubs found out about double-bookings on the day of the event. After CampusGrid, the conflict never reaches a human."_
 
 ---
 
@@ -62,13 +64,13 @@ Managing extracurricular facility bookings at UEAB currently relies on:
 
 This results in:
 
-| Problem | Impact |
-|---|---|
-| Double-booking conflicts | Clubs arrive to find another group already using their venue |
-| Underutilized slots | Available time goes unfilled because no one can see it |
-| Opaque approval process | Requesters have no visibility into their application status |
-| No usage data | Administration cannot make data-driven facility decisions |
-| No conflict resolution mechanism | Disputes are resolved manually and inconsistently |
+| Problem                          | Impact                                                       |
+| -------------------------------- | ------------------------------------------------------------ |
+| Double-booking conflicts         | Clubs arrive to find another group already using their venue |
+| Underutilized slots              | Available time goes unfilled because no one can see it       |
+| Opaque approval process          | Requesters have no visibility into their application status  |
+| No usage data                    | Administration cannot make data-driven facility decisions    |
+| No conflict resolution mechanism | Disputes are resolved manually and inconsistently            |
 
 ---
 
@@ -116,17 +118,17 @@ This results in:
 
 ## 📦 Modules
 
-| # | Module | Description | Status |
-|---|---|---|---|
-| 1 | **User Authentication** | JWT login, role assignment, session management | 🔲 Planned |
-| 2 | **Facility Management** | Admin CRUD for venues — capacity, hours, location | 🔲 Planned |
-| 3 | **Booking Request** | Submit requests with date, time, purpose, attendance | 🔲 Planned |
-| 4 | **Conflict Detection & Resolution** | Detects overlaps, suggests 3 nearest free slots | 🔲 Planned |
-| 5 | **Approval Workflow** | Director review queue, approve/reject with notifications | 🔲 Planned |
-| 6 | **Calendar & Scheduling View** | Interactive visual grid of all bookings in real time | 🔲 Planned |
-| 7 | **Reports & Analytics** | Monthly utilization reports, peak demand, conflict logs | 🔲 Planned |
-| 8 | **Notification Layer** | Email + in-app alerts on all booking status changes | 🔲 Planned |
-| 9 | **Audit Log** | Timestamped record of every booking action and actor | 🔲 Planned |
+| #   | Module                              | Description                                              | Status     |
+| --- | ----------------------------------- | -------------------------------------------------------- | ---------- |
+| 1   | **User Authentication**             | JWT login, role assignment, session management           | 🔲 Planned |
+| 2   | **Facility Management**             | Admin CRUD for venues — capacity, hours, location        | 🔲 Planned |
+| 3   | **Booking Request**                 | Submit requests with date, time, purpose, attendance     | 🔲 Planned |
+| 4   | **Conflict Detection & Resolution** | Detects overlaps, suggests 3 nearest free slots          | 🔲 Planned |
+| 5   | **Approval Workflow**               | Director review queue, approve/reject with notifications | 🔲 Planned |
+| 6   | **Calendar & Scheduling View**      | Interactive visual grid of all bookings in real time     | 🔲 Planned |
+| 7   | **Reports & Analytics**             | Monthly utilization reports, peak demand, conflict logs  | 🔲 Planned |
+| 8   | **Notification Layer**              | Email + in-app alerts on all booking status changes      | 🔲 Planned |
+| 9   | **Audit Log**                       | Timestamped record of every booking action and actor     | 🔲 Planned |
 
 **Status key:** 🔲 Planned · 🔄 In Progress · ✅ Complete · 🧪 Testing
 
@@ -134,18 +136,18 @@ This results in:
 
 ## 🛠️ Tech Stack
 
-| Layer | Technology | Purpose |
-|---|---|---|
-| Frontend | HTML, CSS, Bootstrap 5 | Responsive UI layout |
-| Frontend JS | React (CDN) / HTMX | Reactive calendar and live availability |
-| Backend | Python 3.11 + Django 5 | Application logic, ORM, admin panel |
-| API | Django REST Framework | RESTful endpoints for all modules |
-| Database | MySQL 8.0 | Relational data — bookings, users, facilities |
-| Auth | JWT (via `djangorestframework-simplejwt`) | Stateless, secure role-based access |
-| Notifications | Django Signals + SMTP | Event-driven email and in-app alerts |
-| Design | Figma | Wireframes and UI prototyping |
-| Deployment | Railway / Render (free tier) | Live URL accessible to supervisor and evaluators |
-| Version Control | Git + GitHub | Project history and milestone tracking |
+| Layer           | Technology                                | Purpose                                          |
+| --------------- | ----------------------------------------- | ------------------------------------------------ |
+| Frontend        | HTML, CSS, Bootstrap 5                    | Responsive UI layout                             |
+| Frontend JS     | React (CDN) / HTMX                        | Reactive calendar and live availability          |
+| Backend         | Python 3.11 + Django 5                    | Application logic, ORM, admin panel              |
+| API             | Django REST Framework                     | RESTful endpoints for all modules                |
+| Database        | MySQL 8.0                                 | Relational data — bookings, users, facilities    |
+| Auth            | JWT (via `djangorestframework-simplejwt`) | Stateless, secure role-based access              |
+| Notifications   | Django Signals + SMTP                     | Event-driven email and in-app alerts             |
+| Design          | Figma                                     | Wireframes and UI prototyping                    |
+| Deployment      | Railway / Render (free tier)              | Live URL accessible to supervisor and evaluators |
+| Version Control | Git + GitHub                              | Project history and milestone tracking           |
 
 ---
 
@@ -335,15 +337,15 @@ Phase 6 — Polish & Deployment
 
 ## 📈 Progress Log
 
-| Date | Phase | Milestone | Notes |
-|---|---|---|---|
-| 2026-03-26 | Phase 1 | Repository created and README written | Initial commit |
-| 2026-05-02 | Phase 1 | Django scaffold, settings, DB config, CustomUser model | v0.1.0 |
-| 2026-05-02 | Phase 2 | User authentication — JWT, roles, permissions, registration | v0.2.0 |
-| 2026-05-02 | Phase 2 | Facility management — models, hours, admin, API endpoints | v0.3.0 |
-| — | — | — | — |
+| Date       | Phase   | Milestone                                                   | Notes          |
+| ---------- | ------- | ----------------------------------------------------------- | -------------- |
+| 2026-03-26 | Phase 1 | Repository created and README written                       | Initial commit |
+| 2026-05-02 | Phase 1 | Django scaffold, settings, DB config, CustomUser model      | v0.1.0         |
+| 2026-05-02 | Phase 2 | User authentication — JWT, roles, permissions, registration | v0.2.0         |
+| 2026-05-02 | Phase 2 | Facility management — models, hours, admin, API endpoints   | v0.3.0         |
+| —          | —       | —                                                           | —              |
 
-*This table is updated with every significant commit.*
+_This table is updated with every significant commit._
 
 ---
 
@@ -351,37 +353,37 @@ Phase 6 — Polish & Deployment
 
 > ⚠️ API documentation will be populated as each module is implemented. The full API will be documented using Django REST Framework's built-in browsable API at `/api/`.
 
-| Endpoint | Method | Description | Auth Required |
-|---|---|---|---|
-| `/api/auth/login/` | POST | Obtain JWT token pair | No |
-| `/api/auth/refresh/` | POST | Refresh access token | No |
-| `/api/facilities/` | GET | List all facilities | Yes |
-| `/api/facilities/:id/` | GET | Facility detail + availability | Yes |
-| `/api/bookings/` | GET, POST | List bookings / submit request | Yes |
-| `/api/bookings/:id/` | GET, PATCH | Booking detail / update status | Yes (role-gated) |
-| `/api/bookings/check-conflict/` | POST | Run conflict detection for a slot | Yes |
-| `/api/approvals/` | GET | Pending approvals queue | Approver+ |
-| `/api/approvals/:id/approve/` | POST | Approve a booking | Approver+ |
-| `/api/approvals/:id/reject/` | POST | Reject a booking | Approver+ |
-| `/api/reports/utilization/` | GET | Monthly utilization report | Admin |
-| `/api/reports/audit-log/` | GET | Full audit trail | Admin |
+| Endpoint                        | Method     | Description                       | Auth Required    |
+| ------------------------------- | ---------- | --------------------------------- | ---------------- |
+| `/api/auth/login/`              | POST       | Obtain JWT token pair             | No               |
+| `/api/auth/refresh/`            | POST       | Refresh access token              | No               |
+| `/api/facilities/`              | GET        | List all facilities               | Yes              |
+| `/api/facilities/:id/`          | GET        | Facility detail + availability    | Yes              |
+| `/api/bookings/`                | GET, POST  | List bookings / submit request    | Yes              |
+| `/api/bookings/:id/`            | GET, PATCH | Booking detail / update status    | Yes (role-gated) |
+| `/api/bookings/check-conflict/` | POST       | Run conflict detection for a slot | Yes              |
+| `/api/approvals/`               | GET        | Pending approvals queue           | Approver+        |
+| `/api/approvals/:id/approve/`   | POST       | Approve a booking                 | Approver+        |
+| `/api/approvals/:id/reject/`    | POST       | Reject a booking                  | Approver+        |
+| `/api/reports/utilization/`     | GET        | Monthly utilization report        | Admin            |
+| `/api/reports/audit-log/`       | GET        | Full audit trail                  | Admin            |
 
 ---
 
 ## 👥 Role Permissions
 
-| Feature | Club Leader (Requester) | Sports Director (Approver) | Administrator |
-|---|---|---|---|
-| View facility availability | ✅ | ✅ | ✅ |
-| Submit booking request | ✅ | ✅ | ✅ |
-| View own bookings | ✅ | ✅ | ✅ |
-| View all bookings | ❌ | ✅ | ✅ |
-| Approve / reject bookings | ❌ | ✅ | ✅ |
-| Add / edit facilities | ❌ | ❌ | ✅ |
-| Override any booking | ❌ | ❌ | ✅ |
-| View utilization reports | ❌ | Partial | ✅ |
-| View audit log | ❌ | ❌ | ✅ |
-| Manage user roles | ❌ | ❌ | ✅ |
+| Feature                    | Club Leader (Requester) | Sports Director (Approver) | Administrator |
+| -------------------------- | ----------------------- | -------------------------- | ------------- |
+| View facility availability | ✅                      | ✅                         | ✅            |
+| Submit booking request     | ✅                      | ✅                         | ✅            |
+| View own bookings          | ✅                      | ✅                         | ✅            |
+| View all bookings          | ❌                      | ✅                         | ✅            |
+| Approve / reject bookings  | ❌                      | ✅                         | ✅            |
+| Add / edit facilities      | ❌                      | ❌                         | ✅            |
+| Override any booking       | ❌                      | ❌                         | ✅            |
+| View utilization reports   | ❌                      | Partial                    | ✅            |
+| View audit log             | ❌                      | ❌                         | ✅            |
+| Manage user roles          | ❌                      | ❌                         | ✅            |
 
 ---
 
@@ -390,6 +392,7 @@ Phase 6 — Polish & Deployment
 This repository documents the full development lifecycle of the CampusGrid senior project. Each feature is developed on a separate branch and merged into `main` via a pull request upon completion.
 
 **Branch naming convention:**
+
 ```
 feature/user-authentication
 feature/facility-management
@@ -403,6 +406,7 @@ feature/deployment
 ```
 
 **Commit message convention:**
+
 ```
 feat:   new feature or module
 fix:    bug fix
@@ -426,6 +430,6 @@ This project is licensed under the MIT License — see the [LICENSE](LICENSE) fi
 
 **CampusGrid** · UEAB Senior Project INSY 492 · 2026
 
-*Built with purpose, documented with care.*
+_Built with purpose, documented with care._
 
 </div>
