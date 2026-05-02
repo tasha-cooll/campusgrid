@@ -293,9 +293,9 @@ The project is developed incrementally. Each milestone begins with documentation
 Phase 1 — Foundation
 ├── ✅ Project proposal and scope definition
 ├── ✅ README and repository setup
-├── 🔲 Django project scaffold and app creation
-├── 🔲 Database schema design (ERD)
-└── 🔲 Base templates and static files
+├── ✅ Django project scaffold and app creation
+├── ✅ Database schema design (ERD)
+└── 🔄 Base templates and static files
 
 Phase 2 — Authentication & Facility Management
 ├── 🔲 Custom user model with roles
@@ -338,6 +338,7 @@ Phase 6 — Polish & Deployment
 | Date | Phase | Milestone | Notes |
 |---|---|---|---|
 | 2026-03-26 | Phase 1 | Repository created and README written | Initial commit |
+| 2026-05-02 | Phase 1 | Django scaffold, settings, DB config, CustomUser model | v0.1.0 |
 | — | — | — | — |
 
 *This table is updated with every significant commit.*
