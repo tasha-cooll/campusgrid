@@ -307,10 +307,10 @@ Phase 2 — Authentication & Facility Management
 └── ✅ Facility listing view (all roles)
 
 Phase 3 — Booking & Conflict Engine
-├── 🔲 Booking request form and API endpoint
-├── 🔲 Conflict detection algorithm
-├── 🔲 Three-slot alternative suggestion logic
-└── 🔲 Booking status lifecycle (pending → approved/rejected)
+├── ✅ Booking request form and API endpoint
+├── ✅ Conflict detection algorithm
+├── ✅ Three-slot alternative suggestion logic
+└── ✅ Booking status lifecycle (pending → approved/rejected)
 
 Phase 4 — Approval Workflow & Notifications
 ├── 🔲 Approval queue view (Sports Director)
@@ -337,13 +337,14 @@ Phase 6 — Polish & Deployment
 
 ## 📈 Progress Log
 
-| Date       | Phase   | Milestone                                                   | Notes          |
-| ---------- | ------- | ----------------------------------------------------------- | -------------- |
-| 2026-03-26 | Phase 1 | Repository created and README written                       | Initial commit |
-| 2026-05-02 | Phase 1 | Django scaffold, settings, DB config, CustomUser model      | v0.1.0         |
-| 2026-05-02 | Phase 2 | User authentication — JWT, roles, permissions, registration | v0.2.0         |
-| 2026-05-02 | Phase 2 | Facility management — models, hours, admin, API endpoints   | v0.3.0         |
-| —          | —       | —                                                           | —              |
+| Date       | Phase   | Milestone                                                       | Notes          |
+| ---------- | ------- | --------------------------------------------------------------- | -------------- |
+| 2026-03-26 | Phase 1 | Repository created and README written                           | Initial commit |
+| 2026-05-02 | Phase 1 | Django scaffold, settings, DB config, CustomUser model          | v0.1.0         |
+| 2026-05-02 | Phase 2 | User authentication — JWT, roles, permissions, registration     | v0.2.0         |
+| 2026-05-02 | Phase 2 | Facility management — models, hours, admin, API endpoints       | v0.3.0         |
+| 2026-05-02 | Phase 3 | Booking engine, conflict detection, alternative slot suggestion | v0.4.0         |
+| —          | —       | —                                                               | —              |
 
 _This table is updated with every significant commit._
 
