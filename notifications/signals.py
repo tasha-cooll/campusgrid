@@ -1,0 +1,96 @@
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.core.mail import send_mail
+from django.conf import settings
+
+from bookings.models import Booking, BookingStatus
+from .models import Notification, NotificationType
+
+
+@receiver(post_save, sender=Booking)
+def handle_booking_status_change(sender, instance, created, **kwargs):
+    """
+    Fire notifications whenever a booking is saved.
+    - On create: notify the requester their booking was submitted
+    - On approve: notify requester of approval
+    - On reject: notify requester of rejection
+    - On cancel: notify requester of cancellation
+    """
+    if created:
+        # New booking submitted
+        Notification.objects.create(
+            user=instance.user,
+            booking=instance,
+            type=NotificationType.BOOKING_SUBMITTED,
+            message=(
+                f"Your booking request for '{instance.facility.name}' on "
+                f"{instance.start_time:%B %d, %Y at %H:%M} has been submitted "
+                f"and is pending approval."
+            )
+        )
+        _send_email(
+            subject="CampusGrid — Booking Submitted",
+            message=f"Your booking for {instance.facility.name} on {instance.start_time:%B %d, %Y} is pending approval.",
+            recipient=instance.user.email
+        )
+
+    else:
+        if instance.status == BookingStatus.APPROVED:
+            Notification.objects.create(
+                user=instance.user,
+                booking=instance,
+                type=NotificationType.BOOKING_APPROVED,
+                message=(
+                    f"Great news! Your booking for '{instance.facility.name}' on "
+                    f"{instance.start_time:%B %d, %Y at %H:%M} has been approved."
+                )
+            )
+            _send_email(
+                subject="CampusGrid — Booking Approved ✅",
+                message=f"Your booking for {instance.facility.name} on {instance.start_time:%B %d, %Y} has been approved.",
+                recipient=instance.user.email
+            )
+
+        elif instance.status == BookingStatus.REJECTED:
+            Notification.objects.create(
+                user=instance.user,
+                booking=instance,
+                type=NotificationType.BOOKING_REJECTED,
+                message=(
+                    f"Your booking request for '{instance.facility.name}' on "
+                    f"{instance.start_time:%B %d, %Y at %H:%M} was not approved. "
+                    f"Please contact the Sports Director for more information."
+                )
+            )
+            _send_email(
+                subject="CampusGrid — Booking Rejected",
+                message=f"Your booking for {instance.facility.name} on {instance.start_time:%B %d, %Y} was not approved.",
+                recipient=instance.user.email
+            )
+
+        elif instance.status == BookingStatus.CANCELLED:
+            Notification.objects.create(
+                user=instance.user,
+                booking=instance,
+                type=NotificationType.BOOKING_CANCELLED,
+                message=(
+                    f"Your booking for '{instance.facility.name}' on "
+                    f"{instance.start_time:%B %d, %Y at %H:%M} has been cancelled."
+                )
+            )
+
+
+def _send_email(subject, message, recipient):
+    """Helper — sends email. In dev this prints to terminal."""
+    if not recipient:
+        return
+    try:
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[recipient],
+            fail_silently=True,
+        )
+    except Exception:
+        pass
