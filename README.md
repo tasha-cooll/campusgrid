@@ -313,11 +313,11 @@ Phase 3 — Booking & Conflict Engine
 └── ✅ Booking status lifecycle (pending → approved/rejected)
 
 Phase 4 — Approval Workflow & Notifications
-├── 🔲 Approval queue view (Sports Director)
-├── 🔲 Approve / reject actions
-├── 🔲 Django signals for booking events
-├── 🔲 In-app notification model
-└── 🔲 Email notification via SMTP
+├── ✅ Approval queue view (Sports Director)
+├── ✅ Approve / reject actions
+├── ✅ Django signals for booking events
+├── ✅ In-app notification model
+└── ✅ Email notification via SMTP
 
 Phase 5 — Calendar, Reports & Audit
 ├── 🔲 Interactive calendar grid view
@@ -344,6 +344,7 @@ Phase 6 — Polish & Deployment
 | 2026-05-02 | Phase 2 | User authentication — JWT, roles, permissions, registration     | v0.2.0         |
 | 2026-05-02 | Phase 2 | Facility management — models, hours, admin, API endpoints       | v0.3.0         |
 | 2026-05-02 | Phase 3 | Booking engine, conflict detection, alternative slot suggestion | v0.4.0         |
+| 2026-05-03 | Phase 4 | Approval workflow, notifications, Django signals, email | v0.5.0 |
 | —          | —       | —                                                               | —              |
 
 _This table is updated with every significant commit._
