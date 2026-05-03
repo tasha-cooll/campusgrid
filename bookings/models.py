@@ -1,13 +1,14 @@
 from django.db import models
 from django.conf import settings
-from facilities.models import Facility
+from facilities.models import Facility, FacilityZone
 
 
 class BookingStatus(models.TextChoices):
-    PENDING = 'pending',  'Pending'
-    APPROVED = 'approved', 'Approved'
-    REJECTED = 'rejected', 'Rejected'
-    CANCELLED = 'cancelled', 'Cancelled'
+    PENDING = 'pending',    'Pending'
+    APPROVED = 'approved',   'Approved'
+    REJECTED = 'rejected',   'Rejected'
+    CANCELLED = 'cancelled',  'Cancelled'
+    DISPLACED = 'displaced',  'Displaced by Priority Event'
 
 
 class Booking(models.Model):
@@ -21,6 +22,13 @@ class Booking(models.Model):
         on_delete=models.CASCADE,
         related_name='bookings'
     )
+    zone = models.ForeignKey(
+        FacilityZone,
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name='bookings',
+        help_text="Specific zone within the facility. Leave blank to book entire facility."
+    )
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
     purpose = models.CharField(max_length=255)
@@ -31,6 +39,18 @@ class Booking(models.Model):
         default=BookingStatus.PENDING
     )
     notes = models.TextField(blank=True)
+
+    # Priority booking fields
+    is_priority = models.BooleanField(
+        default=False,
+        help_text="Priority bookings displace existing bookings. Admin only."
+    )
+    priority_reason = models.CharField(
+        max_length=255,
+        blank=True,
+        help_text="Reason for priority e.g. Graduation Ceremony, UEAB Board Meeting"
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -38,13 +58,9 @@ class Booking(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        return f"{self.user.username} — {self.facility.name} [{self.start_time:%Y-%m-%d %H:%M}]"
-
-    def clean(self):
-        from django.core.exceptions import ValidationError
-        if self.start_time and self.end_time:
-            if self.end_time <= self.start_time:
-                raise ValidationError("End time must be after start time.")
+        zone_str = f" [{self.zone.name}]" if self.zone else ""
+        priority_str = " ⚡PRIORITY" if self.is_priority else ""
+        return f"{self.user.username} — {self.facility.name}{zone_str}{priority_str} [{self.start_time:%Y-%m-%d %H:%M}]"
 
 
 class ConflictLog(models.Model):
@@ -63,6 +79,12 @@ class ConflictLog(models.Model):
     facility = models.ForeignKey(
         Facility,
         on_delete=models.CASCADE,
+        related_name='conflict_logs'
+    )
+    zone = models.ForeignKey(
+        FacilityZone,
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
         related_name='conflict_logs'
     )
     requested_start = models.DateTimeField()

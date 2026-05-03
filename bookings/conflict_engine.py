@@ -3,12 +3,41 @@ from django.utils import timezone
 from .models import Booking, BookingStatus
 
 
-def check_conflict(facility_id, start_time, end_time, exclude_booking_id=None):
+def check_recurring_block(facility_id, start_time, end_time, zone_id=None):
     """
-    Check if a requested time slot conflicts with any existing approved
-    or pending bookings for the given facility.
+    Check if the requested slot falls within any active recurring block
+    for the facility or zone.
+    Returns the blocking RecurringBlock if found, None otherwise.
+    """
+    from facilities.models import RecurringBlock
 
-    Returns a queryset of conflicting bookings (empty if no conflict).
+    day_of_week = start_time.weekday()
+    request_start = start_time.time()
+    request_end = end_time.time()
+
+    blocks = RecurringBlock.objects.filter(
+        facility_id=facility_id,
+        day_of_week=day_of_week,
+        is_active=True,
+        start_time__lt=request_end,
+        end_time__gt=request_start,
+    )
+
+    if zone_id:
+        blocks = blocks.filter(
+            models.Q(zone_id=zone_id) | models.Q(zone__isnull=True)
+        )
+
+    return blocks.first()
+
+
+def check_conflict(facility_id, start_time, end_time, zone_id=None, exclude_booking_id=None):
+    """
+    Check if a requested time slot conflicts with any existing
+    approved or pending bookings.
+
+    Zone-aware: if zone_id provided, only conflicts within that zone
+    or whole-facility bookings are flagged.
     """
     queryset = Booking.objects.filter(
         facility_id=facility_id,
@@ -17,25 +46,34 @@ def check_conflict(facility_id, start_time, end_time, exclude_booking_id=None):
         end_time__gt=start_time,
     )
 
+    if zone_id:
+        from django.db.models import Q
+        queryset = queryset.filter(
+            Q(zone_id=zone_id) | Q(zone__isnull=True)
+        )
+
     if exclude_booking_id:
         queryset = queryset.exclude(id=exclude_booking_id)
 
     return queryset
 
 
-def suggest_alternative_slots(facility_id, start_time, end_time, count=3):
+def get_displaced_bookings(facility_id, start_time, end_time, zone_id=None):
     """
-    When a conflict is detected, suggest <count> nearest available
-    time slots of the same duration on the same facility.
+    Get all bookings that would be displaced by a priority booking.
+    Returns pending and approved bookings in the conflicting slot.
+    """
+    return check_conflict(facility_id, start_time, end_time, zone_id)
 
-    Strategy:
-    - Try the same duration slot starting right after the conflict ends
-    - Step forward in 30-minute increments until <count> free slots found
-    - Search up to 7 days ahead
+
+def suggest_alternative_slots(facility_id, start_time, end_time, zone_id=None, count=3):
+    """
+    Suggest nearest available alternative slots of the same duration.
+    Respects both existing bookings and recurring blocks.
     """
     duration = end_time - start_time
     suggestions = []
-    current = end_time  # Start searching from the end of the requested slot
+    current = end_time
     max_search = start_time + timedelta(days=7)
     step = timedelta(minutes=30)
 
@@ -43,12 +81,20 @@ def suggest_alternative_slots(facility_id, start_time, end_time, count=3):
         candidate_start = current
         candidate_end = current + duration
 
-        conflicts = check_conflict(facility_id, candidate_start, candidate_end)
+        # Check existing booking conflicts
+        booking_conflict = check_conflict(
+            facility_id, candidate_start, candidate_end, zone_id
+        )
 
-        if not conflicts.exists():
+        # Check recurring block conflicts
+        recurring_conflict = check_recurring_block(
+            facility_id, candidate_start, candidate_end, zone_id
+        )
+
+        if not booking_conflict.exists() and not recurring_conflict:
             suggestions.append({
-                'start_time': candidate_start.isoformat(),
-                'end_time':   candidate_end.isoformat(),
+                'start_time':       candidate_start.isoformat(),
+                'end_time':         candidate_end.isoformat(),
                 'duration_minutes': int(duration.total_seconds() / 60),
             })
 

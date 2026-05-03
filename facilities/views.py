@@ -3,43 +3,33 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 
-from .models import Facility, FacilityHours
+from .models import Facility, FacilityHours, FacilityZone, RecurringBlock
 from .serializers import (
     FacilitySerializer,
     FacilityWriteSerializer,
     FacilityHoursSerializer,
+    FacilityZoneSerializer,
+    RecurringBlockSerializer,
 )
 from accounts.permissions import IsAdmin
 
 
 class FacilityListView(generics.ListAPIView):
-    """
-    GET /api/facilities/
-    All authenticated users can view the facility list.
-    """
-    queryset = Facility.objects.filter(
-        is_active=True).prefetch_related('hours')
+    queryset = Facility.objects.filter(is_active=True).prefetch_related(
+        'hours', 'zones', 'recurring_blocks')
     serializer_class = FacilitySerializer
     permission_classes = [IsAuthenticated]
 
 
 class FacilityCreateView(generics.CreateAPIView):
-    """
-    POST /api/facilities/
-    Admin only — create a new facility.
-    """
     queryset = Facility.objects.all()
     serializer_class = FacilityWriteSerializer
     permission_classes = [IsAdmin]
 
 
 class FacilityDetailView(generics.RetrieveUpdateDestroyAPIView):
-    """
-    GET    /api/facilities/<id>/   — view any authenticated user
-    PATCH  /api/facilities/<id>/   — admin only
-    DELETE /api/facilities/<id>/   — admin only
-    """
-    queryset = Facility.objects.all().prefetch_related('hours')
+    queryset = Facility.objects.all().prefetch_related(
+        'hours', 'zones', 'recurring_blocks')
     permission_classes = [IsAuthenticated]
 
     def get_serializer_class(self):
@@ -47,16 +37,8 @@ class FacilityDetailView(generics.RetrieveUpdateDestroyAPIView):
             return FacilityWriteSerializer
         return FacilitySerializer
 
-    def check_permissions(self, request):
-        super().check_permissions(request)
-        if request.method in ['PATCH', 'PUT', 'DELETE']:
-            IsAdmin().has_permission(request, self)
-            if not IsAdmin().has_permission(request, self):
-                self.permission_denied(request)
-
     def destroy(self, request, *args, **kwargs):
         facility = self.get_object()
-        # Soft delete — mark inactive instead of removing from DB
         facility.is_active = False
         facility.save()
         return Response(
@@ -66,33 +48,65 @@ class FacilityDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class FacilityHoursView(APIView):
-    """
-    POST   /api/facilities/<id>/hours/  — Admin sets operating hours
-    GET    /api/facilities/<id>/hours/  — Anyone can view hours
-    """
     permission_classes = [IsAuthenticated]
 
     def get(self, request, pk):
         hours = FacilityHours.objects.filter(facility_id=pk)
-        serializer = FacilityHoursSerializer(hours, many=True)
-        return Response(serializer.data)
+        return Response(FacilityHoursSerializer(hours, many=True).data)
 
     def post(self, request, pk):
         if not IsAdmin().has_permission(request, self):
-            return Response(
-                {"error": "Admin access required."},
-                status=status.HTTP_403_FORBIDDEN
-            )
+            return Response({"error": "Admin access required."}, status=status.HTTP_403_FORBIDDEN)
         try:
             facility = Facility.objects.get(pk=pk)
         except Facility.DoesNotExist:
-            return Response(
-                {"error": "Facility not found."},
-                status=status.HTTP_404_NOT_FOUND
-            )
-
+            return Response({"error": "Facility not found."}, status=status.HTTP_404_NOT_FOUND)
         serializer = FacilityHoursSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(facility=facility)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class FacilityZoneListCreateView(generics.ListCreateAPIView):
+    """
+    GET  /api/facilities/<pk>/zones/  — List zones for a facility
+    POST /api/facilities/<pk>/zones/  — Add a zone (Admin only)
+    """
+    serializer_class = FacilityZoneSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return FacilityZone.objects.filter(
+            facility_id=self.kwargs['pk'],
+            is_active=True
+        )
+
+    def perform_create(self, serializer):
+        if not IsAdmin().has_permission(self.request, self):
+            from rest_framework.exceptions import PermissionDenied
+            raise PermissionDenied("Admin access required.")
+        facility = Facility.objects.get(pk=self.kwargs['pk'])
+        serializer.save(facility=facility)
+
+
+class RecurringBlockListCreateView(generics.ListCreateAPIView):
+    """
+    GET  /api/facilities/<pk>/blocks/  — List recurring blocks
+    POST /api/facilities/<pk>/blocks/  — Create a block (Admin only)
+    """
+    serializer_class = RecurringBlockSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return RecurringBlock.objects.filter(
+            facility_id=self.kwargs['pk'],
+            is_active=True
+        )
+
+    def perform_create(self, serializer):
+        if not IsAdmin().has_permission(self.request, self):
+            from rest_framework.exceptions import PermissionDenied
+            raise PermissionDenied("Admin access required.")
+        facility = Facility.objects.get(pk=self.kwargs['pk'])
+        serializer.save(facility=facility, created_by=self.request.user)

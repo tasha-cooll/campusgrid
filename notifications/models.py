@@ -8,6 +8,7 @@ class NotificationType(models.TextChoices):
     BOOKING_APPROVED = 'booking_approved',  'Booking Approved'
     BOOKING_REJECTED = 'booking_rejected',  'Booking Rejected'
     BOOKING_CANCELLED = 'booking_cancelled', 'Booking Cancelled'
+    BOOKING_DISPLACED = 'booking_displaced', 'Booking Displaced by Priority Event'
     CONFLICT_DETECTED = 'conflict_detected', 'Conflict Detected'
 
 
@@ -23,10 +24,7 @@ class Notification(models.Model):
         related_name='notifications',
         null=True, blank=True
     )
-    type = models.CharField(
-        max_length=50,
-        choices=NotificationType.choices
-    )
+    type = models.CharField(max_length=50, choices=NotificationType.choices)
     message = models.TextField()
     is_read = models.BooleanField(default=False)
     sent_at = models.DateTimeField(auto_now_add=True)
