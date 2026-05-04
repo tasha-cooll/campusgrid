@@ -11,11 +11,15 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ['id', 'username', 'email',
-                  'phone', 'role', 'password', 'password2']
+        fields = [
+            'id', 'username', 'institutional_id', 'first_name',
+            'last_name', 'email', 'phone', 'role',
+            'password', 'password2'
+        ]
         extra_kwargs = {
-            'email': {'required': True},
-            'role':  {'required': False},
+            'email':          {'required': True},
+            'institutional_id': {'required': True},
+            'role':           {'required': False},
         }
 
     def validate(self, attrs):
@@ -27,11 +31,16 @@ class RegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop('password2')
         user = CustomUser.objects.create_user(
-            username=validated_data['username'],
+            username=validated_data.get(
+                'username', validated_data['institutional_id']),
+            institutional_id=validated_data['institutional_id'],
             email=validated_data['email'],
             password=validated_data['password'],
+            first_name=validated_data.get('first_name', ''),
+            last_name=validated_data.get('last_name', ''),
             phone=validated_data.get('phone', ''),
             role=validated_data.get('role', Role.REQUESTER),
+            must_change_password=True,
         )
         return user
 

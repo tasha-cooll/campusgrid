@@ -320,10 +320,10 @@ Phase 4 — Approval Workflow & Notifications
 └── ✅ Email notification via SMTP
 
 Phase 5 — Calendar, Reports & Audit
-├── 🔲 Interactive calendar grid view
-├── 🔲 Monthly utilization report generation
-├── 🔲 Conflict log and audit trail
-└── 🔲 Admin analytics dashboard
+├── ✅ Interactive calendar grid view
+├── ✅ Monthly utilization report generation
+├── ✅ Conflict log and audit trail
+└── ✅ Admin analytics dashboard
 
 Phase 6 — Polish & Deployment
 ├── 🔲 Figma wireframe alignment pass
@@ -346,6 +346,7 @@ Phase 6 — Polish & Deployment
 | 2026-05-02 | Phase 3 | Booking engine, conflict detection, alternative slot suggestion | v0.4.0         |
 | 2026-05-03 | Phase 4 | Approval workflow, notifications, Django signals, email | v0.5.0 |
 | 2026-05-03 | Phase 3 Extension | Zones, recurring blocks, priority bookings, displacement | v0.4.2 |
+| 2026-05-04 | Phase 5 | Calendar, utilization, conflict reports, audit log | v0.6.0 |
 | —          | —       | —                                                               | —              |
 
 _This table is updated with every significant commit._
