@@ -1,0 +1,62 @@
+content = """\
+{% extends 'base.html' %}
+
+{% block auth_content %}
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg-primary);width:100%;">
+  <div style="width:100%;max-width:420px;padding:24px;">
+    <div style="text-align:center;margin-bottom:40px;">
+      <div style="font-size:2.2rem;font-weight:800;color:var(--accent);letter-spacing:-1px;">
+        Campus<span style="color:var(--text-primary);">Grid</span>
+      </div>
+      <div style="font-size:0.8rem;color:var(--text-muted);margin-top:4px;text-transform:uppercase;letter-spacing:2px;">
+        University of Eastern Africa Baraton
+      </div>
+    </div>
+    <div class="cg-card">
+      <h5 style="font-size:1.1rem;font-weight:600;margin-bottom:4px;">Sign in</h5>
+      <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:24px;">
+        Use your Student ID or Staff ID to access the facility booking system.
+      </p>
+     {% if messages %}
+        {% for message in messages %}
+          <div class="cg-alert cg-alert-info">
+            <i class="bi bi-info-circle me-2"></i>{{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+      <form method="POST" action="/">
+        {% csrf_token %}
+        <div style="margin-bottom:16px;">
+          <label class="cg-label">Student ID / Staff ID</label>
+          <input type="text" name="username" class="cg-input"
+                 placeholder="e.g. SGATWI2311" required autofocus/>
+        </div>
+        <div style="margin-bottom:24px;">
+          <label class="cg-label">Password</label>
+          <input type="password" name="password" class="cg-input"
+                 placeholder="Enter your password" required/>
+        </div>
+        <button type="submit" class="btn-cg-primary" style="width:100%;padding:12px;">
+          Sign in <i class="bi bi-arrow-right ms-1"></i>
+        </button>
+      </form>
+      <div style="text-align:center;margin-top:16px;">
+        <a href="/signup/" style="font-size:0.82rem;color:var(--accent);text-decoration:none;">
+          <i class="bi bi-person-plus me-1"></i> Create a new account
+        </a>
+      </div>
+      <p style="font-size:0.78rem;color:var(--text-muted);text-align:center;margin-top:12px;">
+        Forgot your password? Contact the system administrator.
+      </p>
+    </div>
+    <p style="text-align:center;font-size:0.72rem;color:var(--text-muted);margin-top:24px;">
+      CampusGrid &middot; UEAB Extracurricular Facility Booking &middot; 2026
+    </p>
+  </div>
+</div>
+{% endblock %}
+"""
+
+with open('templates/auth/login.html', 'w', encoding='utf-8', newline='\n') as f:
+    f.write(content)
+print('Login template written successfully')

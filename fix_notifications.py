@@ -1,0 +1,80 @@
+content = """\
+{% extends 'base.html' %}
+{% block title %}Notifications{% endblock %}
+{% block page_title %}Notifications{% endblock %}
+
+{% block content %}
+<div style="max-width:680px;">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div style="font-size:0.85rem;color:var(--text-muted);">Your booking updates and system alerts.</div>
+    <button onclick="markAllRead()" class="btn-cg-outline" style="font-size:0.8rem;">
+      <i class="bi bi-check2-all me-1"></i> Mark all read
+    </button>
+  </div>
+  <div id="notifications-list">
+    <div style="text-align:center;padding:40px;color:var(--text-muted);">
+      <i class="bi bi-hourglass-split" style="font-size:2rem;"></i>
+      <p style="margin-top:8px;">Loading notifications...</p>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+const TYPE_ICONS = {
+  booking_submitted: {icon:'bi-send',                color:'#2E75B6'},
+  booking_approved:  {icon:'bi-check-circle',        color:'#22C55E'},
+  booking_rejected:  {icon:'bi-x-circle',            color:'#EF4444'},
+  booking_cancelled: {icon:'bi-slash-circle',        color:'#94A3B8'},
+  booking_displaced: {icon:'bi-exclamation-triangle',color:'#FF6B35'},
+  conflict_detected: {icon:'bi-shield-exclamation',  color:'#F4A261'},
+};
+
+async function loadNotifications() {
+  const res = await API.get('/notifications/');
+  const container = document.getElementById('notifications-list');
+  if (!res || !res.ok) {
+    container.innerHTML = '<div class="cg-alert cg-alert-error">Failed to load notifications.</div>';
+    return;
+  }
+  const data = await res.json();
+  if (!data.length) {
+    container.innerHTML = '<div style="text-align:center;padding:48px;color:var(--text-muted);"><i class="bi bi-bell-slash" style="font-size:2.5rem;"></i><p style="margin-top:12px;">No notifications yet.</p></div>';
+    return;
+  }
+  let html = '';
+  data.forEach(function(n) {
+    const meta  = TYPE_ICONS[n.type] || {icon:'bi-bell', color:'#2E75B6'};
+    const unread = !n.is_read;
+    const sentAt = new Date(n.sent_at).toLocaleString('en-KE', {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'});
+    html += '<div onclick="markRead(' + n.id + ',this)" style="display:flex;gap:14px;padding:16px;margin-bottom:8px;background:' + (unread ? 'var(--bg-secondary)' : 'transparent') + ';border:1px solid ' + (unread ? 'var(--border)' : 'transparent') + ';border-radius:10px;cursor:pointer;">';
+    html += '<div style="width:40px;height:40px;border-radius:10px;background:' + meta.color + '22;display:flex;align-items:center;justify-content:center;flex-shrink:0;">';
+    html += '<i class="bi ' + meta.icon + '" style="color:' + meta.color + ';font-size:1.1rem;"></i></div>';
+    html += '<div style="flex:1;"><div style="font-size:0.875rem;' + (unread ? 'font-weight:500;' : 'color:var(--text-muted);') + '">' + n.message + '</div>';
+    html += '<div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;">' + sentAt;
+    if (unread) html += '<span style="display:inline-block;width:6px;height:6px;background:#2E75B6;border-radius:50%;margin-left:8px;vertical-align:middle;"></span>';
+    html += '</div></div></div>';
+  });
+  container.innerHTML = html;
+}
+
+async function markRead(id, el) {
+  await API.patch('/notifications/' + id + '/read/');
+  el.style.background  = 'transparent';
+  el.style.borderColor = 'transparent';
+}
+
+async function markAllRead() {
+  await API.patch('/notifications/mark-all-read/');
+  loadNotifications();
+}
+
+loadNotifications();
+</script>
+{% endblock %}
+"""
+
+with open('templates/notifications/list.html', 'w', encoding='utf-8', newline='\n') as f:
+    f.write(content)
+print('Notifications template written successfully')
