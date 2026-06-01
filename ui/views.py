@@ -16,12 +16,19 @@ def login_view(request):
         if user:
             if not user.is_active:
                 messages.error(
-                    request, 'Your account is pending activation by the administrator. Please check back later.')
+                    request, 'Your account is pending activation by the administrator.')
                 return render(request, 'auth/login.html')
             login(request, user)
+            if user.must_change_password:
+                return render(request, 'auth/login_redirect.html', {
+                    'username': username,
+                    'password': password,
+                    'redirect_to': '/change-password/',
+                })
             return render(request, 'auth/login_redirect.html', {
                 'username': username,
                 'password': password,
+                'redirect_to': '/calendar/',
             })
         messages.error(
             request, 'Invalid credentials. Please check your ID and password.')
@@ -185,9 +192,69 @@ def reports_view(request):
     })
 
 
+def change_password_view(request):
+    from django.contrib.auth import update_session_auth_hash
+    forced = request.user.must_change_password if request.user.is_authenticated else False
+
+    if request.method == 'POST':
+        new_password = request.POST.get('new_password', '')
+        new_password2 = request.POST.get('new_password2', '')
+        current_password = request.POST.get('current_password', '')
+
+        if new_password != new_password2:
+            messages.error(request, 'Passwords do not match.')
+            return render(request, 'auth/change_password.html', {'forced': forced})
+
+        if len(new_password) < 8:
+            messages.error(request, 'Password must be at least 8 characters.')
+            return render(request, 'auth/change_password.html', {'forced': forced})
+
+        if not forced:
+            if not request.user.check_password(current_password):
+                messages.error(request, 'Current password is incorrect.')
+                return render(request, 'auth/change_password.html', {'forced': forced})
+
+        request.user.set_password(new_password)
+        request.user.must_change_password = False
+        request.user.save()
+        update_session_auth_hash(request, request.user)
+        messages.success(request, 'Password changed successfully.')
+        return redirect('ui:calendar')
+
+    return render(request, 'auth/change_password.html', {
+        'user':   request.user,
+        'page':   'settings',
+        'forced': forced
+    })
+
+
+@login_required(login_url='/')
+def users_view(request):
+    if request.user.role != 'admin':
+        return redirect('ui:calendar')
+    return render(request, 'users/list.html', {
+        'user': request.user,
+        'page': 'users'
+    })
+
+
+@login_required(login_url='/')
+def booking_confirmation_view(request):
+    return render(request, 'bookings/confirmation.html', {
+        'user': request.user,
+        'page': 'bookings'
+    })
+
+
 @login_required(login_url='/')
 def notifications_view(request):
     return render(request, 'notifications/list.html', {
         'user': request.user,
         'page': 'notifications'
     })
+
+
+def custom_404_view(request, exception):
+    return render(request, '404.html', {
+        'user': request.user,
+    }, status=404)

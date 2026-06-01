@@ -1,66 +1,55 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-  <head>
-    <title>Signing in...</title>
-    <style>
-      body {
-        background: #0a0e1a;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 100vh;
-        margin: 0;
-        font-family: "Segoe UI", sans-serif;
-        color: #f1f5f9;
-      }
-      .loader {
-        text-align: center;
-      }
-      .spinner {
-        width: 40px;
-        height: 40px;
-        border: 3px solid #1e293b;
-        border-top-color: #2e75b6;
-        border-radius: 50%;
-        animation: spin 0.8s linear infinite;
-        margin: 0 auto 16px;
-      }
-      @keyframes spin {
-        to {
-          transform: rotate(360deg);
+<head>
+  <title>Signing in...</title>
+  <style>
+    body {
+      background: #1A1612;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      font-family: Inter, sans-serif;
+      color: #E8DCC8;
+    }
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 2px solid #3D3426;
+      border-top-color: #C9A84C;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    p { color: #9C8F7A; font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+  <div style="text-align:center;">
+    <div class="spinner"></div>
+    <p>Signing you in...</p>
+  </div>
+  <script>
+    (async function() {
+      try {
+        const res = await fetch('/api/auth/login/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: '{{ username }}',
+            password: '{{ password }}'
+          })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          localStorage.setItem('cg_access_token', data.access);
+          localStorage.setItem('cg_refresh_token', data.refresh);
         }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="loader">
-      <div class="spinner"></div>
-      <p style="color: #94a3b8; font-size: 0.9rem">Signing you in...</p>
-    </div>
-    <script>
-      async function getToken() {
-        try {
-          const res = await fetch("/api/auth/login/", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              username: "{{ username }}",
-              password: "{{ password }}",
-            }),
-          });
-          if (res.ok) {
-            const data = await res.json();
-            localStorage.setItem("cg_access_token", data.access);
-            localStorage.setItem("cg_refresh_token", data.refresh);
-            window.location.href = "/calendar/";
-          } else {
-            window.location.href = "/";
-          }
-        } catch (e) {
-          window.location.href = "/";
-        }
-      }
-      getToken();
-    </script>
-  </body>
+      } catch(e) {}
+      window.location.href = '{{ redirect_to }}';
+    })();
+  </script>
+</body>
 </html>

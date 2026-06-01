@@ -52,3 +52,23 @@ class ChangeRoleView(generics.UpdateAPIView):
     serializer_class = ChangeRoleSerializer
     permission_classes = [IsAdmin]
     http_method_names = ['patch']
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status as drf_status
+
+class ToggleUserActiveView(APIView):
+    permission_classes = [IsAdmin]
+
+    def patch(self, request, pk):
+        try:
+            user = User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found.'}, status=drf_status.HTTP_404_NOT_FOUND)
+        user.is_active = not user.is_active
+        user.save()
+        return Response({
+            'id': user.id,
+            'is_active': user.is_active,
+            'message': f"User {'activated' if user.is_active else 'deactivated'} successfully."
+        })

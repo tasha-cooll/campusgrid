@@ -147,3 +147,8 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+# ─── ADMIN CUSTOMISATION ─────────────────────────────────────────
+ADMIN_SITE_HEADER = "CampusGrid Administration"
+ADMIN_SITE_TITLE = "CampusGrid Admin"
+ADMIN_INDEX_TITLE = "System Administration"

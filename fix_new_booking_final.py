@@ -272,7 +272,7 @@ async function submitBooking() {
   if (res) {
     var data = await res.json();
     if (res.ok) {
-      window.location.href = '/bookings/?success=1';
+      window.location.href = '/bookings/confirm/?id=' + data.id;
     } else {
       btn.disabled = false;
       btn.innerHTML = '<i class="bi bi-send me-1"></i> Submit Request';

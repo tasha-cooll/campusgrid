@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block title %}Booking Confirmed{% endblock %}
+{% block page_title %}Booking Submitted{% endblock %}
+
+{% block content %}
+<div style="max-width:560px;margin:40px auto;">
+  <div class="cg-card" style="text-align:center;padding:40px;">
+    <div style="width:64px;height:64px;border-radius:50%;background:rgba(74,124,89,0.15);border:2px solid rgba(74,124,89,0.3);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
+      <i class="bi bi-check-lg" style="font-size:1.8rem;color:#86B89A;"></i>
+    </div>
+    <h4 style="font-family:'EB Garamond',serif;font-size:1.5rem;margin-bottom:8px;">Booking Submitted</h4>
+    <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:28px;">
+      Your booking request has been submitted and is pending approval from the Sports Director.
+    </p>
+
+    <div id="booking-details" style="background:var(--bg-primary);border:1px solid var(--border);border-radius:6px;padding:20px;text-align:left;margin-bottom:24px;">
+      <div style="display:grid;gap:12px;font-size:0.85rem;">
+        <div style="display:flex;justify-content:space-between;">
+          <span style="color:var(--text-muted);">Reference No.</span>
+          <span id="ref-no" style="font-family:monospace;color:var(--accent);font-weight:600;"></span>
+        </div>
+        <div style="display:flex;justify-content:space-between;">
+          <span style="color:var(--text-muted);">Facility</span>
+          <span id="conf-facility" style="font-weight:500;"></span>
+        </div>
+        <div style="display:flex;justify-content:space-between;">
+          <span style="color:var(--text-muted);">Zone</span>
+          <span id="conf-zone"></span>
+        </div>
+        <div style="display:flex;justify-content:space-between;">
+          <span style="color:var(--text-muted);">Date</span>
+          <span id="conf-date" style="font-weight:500;"></span>
+        </div>
+        <div style="display:flex;justify-content:space-between;">
+          <span style="color:var(--text-muted);">Time</span>
+          <span id="conf-time"></span>
+        </div>
+        <div style="display:flex;justify-content:space-between;">
+          <span style="color:var(--text-muted);">Purpose</span>
+          <span id="conf-purpose"></span>
+        </div>
+        <div style="display:flex;justify-content:space-between;">
+          <span style="color:var(--text-muted);">Status</span>
+          <span class="status-badge badge-pending">Pending Approval</span>
+        </div>
+      </div>
+    </div>
+
+    <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:24px;">
+      <i class="bi bi-info-circle me-1"></i>
+      Screenshot or print this page for your records. You will be notified when your booking is reviewed.
+    </p>
+
+    <div style="display:flex;gap:12px;justify-content:center;">
+      <button onclick="window.print()" class="btn-cg-outline">
+        <i class="bi bi-printer me-1"></i> Print Receipt
+      </button>
+      <a href="/bookings/" class="btn-cg-primary">View My Bookings</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+const bookingId = new URLSearchParams(window.location.search).get('id');
+if (bookingId) {
+  document.getElementById('ref-no').textContent = 'CG-' + String(bookingId).padStart(5, '0');
+  API.get('/bookings/' + bookingId + '/').then(function(res) {
+    if (res && res.ok) {
+      res.json().then(function(b) {
+        const start = new Date(b.start_time);
+        const end   = new Date(b.end_time);
+        document.getElementById('conf-facility').textContent = b.facility_detail.name;
+        document.getElementById('conf-zone').textContent     = b.zone_name || 'Entire facility';
+        document.getElementById('conf-date').textContent     = start.toLocaleDateString('en-KE', {weekday:'long', month:'long', day:'numeric', year:'numeric'});
+        document.getElementById('conf-time').textContent     = start.toLocaleTimeString('en-KE', {hour:'2-digit', minute:'2-digit'}) + ' — ' + end.toLocaleTimeString('en-KE', {hour:'2-digit', minute:'2-digit'});
+        document.getElementById('conf-purpose').textContent  = b.purpose;
+      });
+    }
+  });
+} else {
+  window.location.href = '/bookings/';
+}
+</script>
+{% endblock %}
