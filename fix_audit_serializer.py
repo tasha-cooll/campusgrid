@@ -1,16 +1,17 @@
+content = """\
 from rest_framework import serializers
 from reports.models import AuditLog
 
 
 class AuditLogSerializer(serializers.ModelSerializer):
-    actor_name = serializers.SerializerMethodField()
-    action_display = serializers.SerializerMethodField()
-    booking_info = serializers.SerializerMethodField()
+    actor_name       = serializers.SerializerMethodField()
+    action_display   = serializers.SerializerMethodField()
+    booking_info     = serializers.SerializerMethodField()
     target_user_name = serializers.SerializerMethodField()
-    ip_address = serializers.SerializerMethodField()
+    ip_address       = serializers.SerializerMethodField()
 
     class Meta:
-        model = AuditLog
+        model  = AuditLog
         fields = [
             'id', 'actor_name', 'action', 'action_display',
             'details', 'booking_info', 'target_user_name',
@@ -37,3 +38,8 @@ class AuditLogSerializer(serializers.ModelSerializer):
 
     def get_ip_address(self, obj):
         return str(obj.ip_address) if obj.ip_address else None
+"""
+
+with open('reports/serializers.py', 'w', encoding='utf-8', newline='\\n') as f:
+    f.write(content)
+print('Serializer written successfully')

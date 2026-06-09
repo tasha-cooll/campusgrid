@@ -12,6 +12,7 @@ from .serializers import AuditLogSerializer
 from bookings.models import Booking, BookingStatus, ConflictLog
 from facilities.models import Facility
 from accounts.permissions import IsAdmin, IsApprover
+from accounts.permissions import IsAdmin
 
 
 class CalendarView(APIView):
@@ -210,16 +211,35 @@ class DashboardSummaryView(APIView):
         })
 
 
-class AuditLogView(generics.ListAPIView):
-    serializer_class = AuditLogSerializer
-    permission_classes = [IsAdmin]
+class AuditLogView(APIView):
+    permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        queryset = AuditLog.objects.all().select_related('actor', 'booking__facility')
-        action = self.request.query_params.get('action')
-        if action:
-            queryset = queryset.filter(action=action)
-        return queryset
+    def get(self, request):
+        if request.user.role != 'admin':
+            return Response({'error': 'Admin access required.'}, status=403)
+
+        from bookings.models import Booking
+        bookings = Booking.objects.select_related(
+            'user', 'facility', 'zone'
+        ).order_by('-created_at')[:100]
+
+        data = []
+        for b in bookings:
+            data.append({
+                'id':             b.id,
+                'user':           b.user.username,
+                'full_name':      b.user.get_full_name() or b.user.username,
+                'facility':       b.facility.name,
+                'zone':           b.zone.name if b.zone else 'Entire facility',
+                'purpose':        b.purpose,
+                'start_time':     b.start_time.isoformat(),
+                'status':         b.status,
+                'status_display': b.get_status_display(),
+                'created_at':     b.created_at.isoformat(),
+                'is_priority':    b.is_priority,
+            })
+
+        return Response(data)
 
 
 def _get_status_color(status, is_priority):

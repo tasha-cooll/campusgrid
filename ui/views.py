@@ -258,3 +258,13 @@ def custom_404_view(request, exception):
     return render(request, '404.html', {
         'user': request.user,
     }, status=404)
+
+
+@login_required(login_url='/')
+def audit_log_view(request):
+    if request.user.role != 'admin':
+        return redirect('ui:calendar')
+    return render(request, 'audit/log.html', {
+        'user': request.user,
+        'page': 'audit'
+    })

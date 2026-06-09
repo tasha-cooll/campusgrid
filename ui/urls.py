@@ -19,4 +19,5 @@ urlpatterns = [
     path('reports/',          views.reports_view,            name='reports'),
     path('notifications/',    views.notifications_view,      name='notifications'),
     path('users/',            views.users_view,              name='users'),
+    path('audit-log/', views.audit_log_view, name='audit-log'),
 ]

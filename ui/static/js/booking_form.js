@@ -127,10 +127,11 @@ async function submitBooking() {
   if (res) {
     var data = await res.json();
     if (res.ok) {
-      btn.innerHTML     = '<i class="bi bi-check-circle me-1"></i> Booking Successful';
+      btn.innerHTML        = '<i class="bi bi-check-circle me-1"></i> Submitted';
       btn.style.background = '#2A6B4A';
-      showToast('Booking submitted successfully. Awaiting approval from the Sports Director.');
-      setTimeout(function() { window.location.href = '/bookings/confirm/?id=' + data.id; }, 2200);
+      btn.style.color      = '#F0F4FF';
+      btn.style.opacity    = '1';
+      setTimeout(function() { window.location.href = '/bookings/confirm/?id=' + data.id; }, 1500);
     } else {
       btn.disabled  = false;
       btn.innerHTML = '<i class="bi bi-send me-1"></i> Submit Request';

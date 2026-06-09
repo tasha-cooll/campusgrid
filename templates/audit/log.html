@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% block title %}Activity Log{% endblock %}
+{% block page_title %}Booking Activity Log{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div style="font-size:0.84rem;color:var(--text-muted);">
+    Complete record of all booking activity. Admin access only.
+  </div>
+  <button onclick="exportCSV()" class="btn-cg-outline" style="font-size:0.82rem;">
+    <i class="bi bi-download me-1"></i> Export CSV
+  </button>
+</div>
+
+<div class="cg-card">
+  <div id="log-content">
+    <div style="display:grid;gap:8px;">
+      <div class="skeleton" style="height:44px;"></div>
+      <div class="skeleton" style="height:44px;"></div>
+      <div class="skeleton" style="height:44px;"></div>
+      <div class="skeleton" style="height:44px;"></div>
+      <div class="skeleton" style="height:44px;"></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+var logData = [];
+
+async function loadLog() {
+  var res = await API.get('/reports/audit-log/');
+  var container = document.getElementById('log-content');
+  if (!res || !res.ok) {
+    container.innerHTML = '<div class="cg-alert cg-alert-error">Failed to load activity log. Status: ' + (res ? res.status : 'no response') + '</div>';
+    return;
+  }
+  logData = await res.json();
+  if (!logData.length) {
+    container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);"><i class="bi bi-journal-x" style="font-size:2.5rem;"></i><p style="margin-top:12px;">No booking activity recorded yet.</p></div>';
+    return;
+  }
+  var html = '<table class="cg-table"><thead><tr>';
+  html += '<th>Ref</th><th>Booked By</th><th>Facility</th><th>Zone</th><th>Purpose</th><th>Date &amp; Time</th><th>Status</th><th>Submitted</th>';
+  html += '</tr></thead><tbody>';
+  logData.forEach(function(b) {
+    var startDate = new Date(b.start_time).toLocaleDateString('en-KE', {weekday:'short', month:'short', day:'numeric'});
+    var startTime = new Date(b.start_time).toLocaleTimeString('en-KE', {hour:'2-digit', minute:'2-digit'});
+    var created   = new Date(b.created_at).toLocaleDateString('en-KE', {month:'short', day:'numeric', year:'numeric'});
+    var sc = b.status === 'approved' ? '#6BAB8A' : b.status === 'rejected' ? '#C4827A' : b.status === 'displaced' ? '#C49A6C' : b.status === 'cancelled' ? '#8A9BBF' : '#C9A84C';
+    html += '<tr>';
+    html += '<td style="font-family:monospace;font-size:0.78rem;color:var(--text-muted);">CG-' + String(b.id).padStart(5,'0') + (b.is_priority ? ' <span style="color:#C4827A;font-size:0.68rem;font-weight:700;">PRIORITY</span>' : '') + '</td>';
+    html += '<td><div style="font-weight:500;">' + b.full_name + '</div><div style="font-size:0.75rem;color:var(--text-muted);font-family:monospace;">' + b.user + '</div></td>';
+    html += '<td style="font-weight:500;">' + b.facility + '</td>';
+    html += '<td style="font-size:0.82rem;color:var(--text-muted);">' + b.zone + '</td>';
+    html += '<td>' + b.purpose + '</td>';
+    html += '<td><div style="font-weight:500;">' + startDate + '</div><div style="font-size:0.75rem;color:var(--text-muted);">' + startTime + '</div></td>';
+    html += '<td><span style="font-size:0.72rem;font-weight:600;color:' + sc + ';text-transform:uppercase;letter-spacing:0.8px;">' + b.status_display + '</span></td>';
+    html += '<td style="font-size:0.78rem;color:var(--text-muted);">' + created + '</td>';
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  html += '<div style="margin-top:12px;font-size:0.75rem;color:var(--text-muted);text-align:right;">' + logData.length + ' records shown</div>';
+  container.innerHTML = html;
+}
+
+function exportCSV() {
+  if (!logData.length) return;
+  var rows = ['Reference,User ID,Full Name,Facility,Zone,Purpose,Date,Time,Status,Submitted'];
+  logData.forEach(function(b) {
+    var d = new Date(b.start_time);
+    rows.push([
+      'CG-' + String(b.id).padStart(5,'0'),
+      b.user,
+      '"' + b.full_name + '"',
+      '"' + b.facility + '"',
+      '"' + b.zone + '"',
+      '"' + b.purpose.replace(/"/g,"'") + '"',
+      d.toLocaleDateString('en-KE'),
+      d.toLocaleTimeString('en-KE', {hour:'2-digit', minute:'2-digit'}),
+      b.status_display,
+      new Date(b.created_at).toLocaleDateString('en-KE')
+    ].join(','));
+  });
+  var blob = new Blob([rows.join('\n')], {type:'text/csv;charset=utf-8;'});
+  var url  = URL.createObjectURL(blob);
+  var a    = document.createElement('a');
+  a.href = url;
+  a.download = 'CampusGrid_ActivityLog_' + new Date().toISOString().slice(0,10) + '.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+loadLog();
+</script>
+{% endblock %}

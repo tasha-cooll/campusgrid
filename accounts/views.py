@@ -43,19 +43,31 @@ class UserListView(generics.ListAPIView):
     permission_classes = [IsAdmin]
 
 
-class ChangeRoleView(generics.UpdateAPIView):
-    """
-    PATCH /api/accounts/users/<id>/role/
-    Admin only — change a user's role.
-    """
-    queryset = User.objects.all()
-    serializer_class = ChangeRoleSerializer
+class ChangeRoleView(APIView):
     permission_classes = [IsAdmin]
-    http_method_names = ['patch']
 
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status as drf_status
+    def patch(self, request, pk):
+        try:
+            user = User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        old_role = user.role
+        serializer = ChangeRoleSerializer(
+            user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            from reports.utils import log_action
+            log_action(
+                actor=request.user,
+                action='user_role_changed',
+                details=f'Changed {user.username} role from {old_role} to {user.role}',
+                target_user=user,
+                request=request,
+            )
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class ToggleUserActiveView(APIView):
     permission_classes = [IsAdmin]
@@ -64,11 +76,25 @@ class ToggleUserActiveView(APIView):
         try:
             user = User.objects.get(pk=pk)
         except User.DoesNotExist:
-            return Response({'error': 'User not found.'}, status=drf_status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+
         user.is_active = not user.is_active
         user.save()
+
+        action = 'user_activated' if user.is_active else 'user_deactivated'
+        details = f'{"Activated" if user.is_active else "Deactivated"} account for {user.username}'
+
+        from reports.utils import log_action
+        log_action(
+            actor=request.user,
+            action=action,
+            details=details,
+            target_user=user,
+            request=request,
+        )
+
         return Response({
-            'id': user.id,
+            'id':        user.id,
             'is_active': user.is_active,
-            'message': f"User {'activated' if user.is_active else 'deactivated'} successfully."
+            'message':   details,
         })
